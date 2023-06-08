@@ -3,7 +3,9 @@ float echoPin = 3;
 float maxDistance=17.79;
 float area= 59.3;
 float Sarea = 47.1;
+float funnel_area =108.2;
 float volume;
+float amount_of_rain;
 void setup() {
    Serial.begin(9600); 
    pinMode(pingPin, OUTPUT);
@@ -14,7 +16,7 @@ void setup() {
 void loop() {
 
 water_volume();
-   Serial.print(volume);
+   Serial.print(amount_of_rain);
    Serial.print("cm");
    Serial.println();
    delay(2000);
@@ -47,6 +49,7 @@ water_volume();
 volume= (area*waterHeight)+50;
 
   }
+ amount_of_rain = volume/funnel_area;
 
  }
 float microsecondsToCentimeters(float microseconds) {
