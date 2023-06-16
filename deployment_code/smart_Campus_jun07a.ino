@@ -36,7 +36,12 @@ DFRobot_SGP40    mySgp40;
 
 #include "thingProperties.h"
 
-int LED = D9;
+const int soil_s=A0;
+const int myswitch= D7;
+bool thisState ;
+bool lastMySwitchState;
+const int relay = D9 ;
+bool automode;
 
 void setup() {
   //pinMode(myLED, OUTPUT);
@@ -66,6 +71,10 @@ void setup() {
     delay(1000);}
     
   Serial.println(" Sensor  initialize success!!");
+  pinMode(myswitch,INPUT);
+  pinMode(relay,OUTPUT);
+  pinMode(soil_s,INPUT);
+
 
   ml.begin(model);
 
@@ -97,9 +106,9 @@ void loop() {
    airQ=index;
    temp=temperature;
    hum=humidity;
-   int soil=analogRead(A0);
-   int soil_P=1-(soil/3500);
-   soilM=soil_P*100;
+  //irrigation
+  irrigation_setting(automode);
+   
   // Perform standardization on each reading
   // Use the values from means[] and std_devs[]
   temperature = (temperature - means[2]) / std_devs[2];
@@ -123,3 +132,49 @@ void loop() {
   Since SoilM is READ_WRITE variable, onSoilMChange() is
   executed every time a new value is received from IoT Cloud.
 */
+
+/*
+  Since SoilM is READ_WRITE variable, onSoilMChange() is
+  executed every time a new value is received from IoT Cloud.
+*/
+void onSoilMChange()  {
+  // Add your code here to act upon SoilM change
+  if (soilM == 1) {
+    automode=1;
+    }
+    else{
+      automode=0;
+    }
+}
+void irrigation_setting(bool mode)
+{ if(mode ==1){//automatic
+  float soilS=analogRead(A0);
+  float soilC =100*(1-(soilS/4095));// calculating soil water %
+  if (soilC < 30){
+    digitalWrite(relay,HIGH);
+  }
+  else if (soilC>30)
+  {
+    digitalWrite(relay,LOW);
+  }
+  }
+  if (mode== 0)
+  {
+     thisState = digitalRead(myswitch);
+  if (thisState != lastMySwitchState)
+  {  
+    //update the switch state
+    lastMySwitchState = thisState;  
+
+    //"HIGH condition code"
+    //switch goes from LOW to HIGH
+    if(thisState == HIGH)        
+    {
+      //relay on pin 9 is Push ON, Push OFF
+      digitalWrite(relay,!digitalRead(relay)); 
+    }
+  }
+  }
+  
+}
+

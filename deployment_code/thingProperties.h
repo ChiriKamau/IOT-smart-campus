@@ -3,18 +3,19 @@
 #include <ArduinoIoTCloud.h>
 #include <Arduino_ConnectionHandler.h>
 
-const char DEVICE_LOGIN_NAME[]  = "paste here";
+const char DEVICE_LOGIN_NAME[]  = "baf33a57-1fd8-4b03-84a6-b2978cb55818";
 
 const char SSID[]               = SECRET_SSID;    // Network SSID (name)
 const char PASS[]               = SECRET_OPTIONAL_PASS;    // Network password (use for WPA, or use as key for WEP)
 const char DEVICE_KEY[]  = SECRET_DEVICE_KEY;    // Secret device password
 
+void onSoilMChange();
 
 float airQ;
 float hum;
 float rain;
 float temp;
-int soilM;
+bool soilM;
 
 void initProperties(){
 
@@ -24,7 +25,7 @@ void initProperties(){
   ArduinoCloud.addProperty(hum, READ, 5 * SECONDS, NULL);
   ArduinoCloud.addProperty(rain, READ, 5 * SECONDS, NULL);
   ArduinoCloud.addProperty(temp, READ, 5 * SECONDS, NULL);
-  ArduinoCloud.addProperty(soilM, READ, 5 * SECONDS, NULL);
+  ArduinoCloud.addProperty(soilM, READWRITE, ON_CHANGE, onSoilMChange, 5);
 
 }
 
